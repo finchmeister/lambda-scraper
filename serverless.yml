@@ -1,0 +1,29 @@
+service: lamdba-scraper
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+  environment:
+    SCRAPER_API_ACCESS_TOKEN: ${file(./serverless.env.yml):SCRAPER_API_ACCESS_TOKEN}
+    PUSHBULLET_ACCESS_TOKEN: ${file(./serverless.env.yml):PUSHBULLET_ACCESS_TOKEN}
+    TITLE: ${file(./serverless.env.yml):TITLE}
+    URL: ${file(./serverless.env.yml):URL}
+    ELEMENT_SELECTOR: ${file(./serverless.env.yml):ELEMENT_SELECTOR}
+    EXPECTED_VALUE: ${file(./serverless.env.yml):EXPECTED_VALUE}
+  region: eu-west-2
+  timeout: 30
+
+functions:
+  scraper:
+    handler: handler.lambda_handler
+    events:
+      - schedule: rate(1 day)
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    pythonBin: .venv/bin/python3
